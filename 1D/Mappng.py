@@ -3,44 +3,51 @@ import numpy as np
 import shapefile as shp
 import matplotlib.pyplot as plt
 import seaborn as sns
+from shapely.geometry import Point, Polygon
+import geopandas as gpd
 
 import requests
 import time
 from multiprocessing import Pool
 
-# df = pd.read_csv('hdb-property-information.csv')
-# print(df.columns)
-#
-# building_df = pd.read_json('buildings.json')
-# print(building_df.columns)
-#
-#
-#
-# important_columns = ['street','market_hawker','miscellaneous','total_dwelling_units']
-# housing_df = df[important_columns]
-#
-#
-# streetname = housing_df['street']
-# markets = housing_df['market_hawker']
-# #Examples include admin office, childcare centre, education centre, Residents' Committees centre
-# misc = housing_df['miscellaneous']
-# population = housing_df['total_dwelling_units']
-#
-#
-# housing_df.replace('Y',1,inplace=True)
-# housing_df.replace('N',0,inplace=True)
-#
-#
-# print(housing_df.describe())
-#
-# print(housing_df.groupby('street').sum().head())
+df = pd.read_csv('hdb-property-information.csv')
+print(df.columns)
+
+building_df = pd.read_json('buildings.json')
+print(building_df.columns)
+
+combined = df.set_index('street').join(building_df.set_index('ROAD_NAME'))
+
+print(combined.head())
 
 
-shp_path = "./Bollard_Apr2019/Bollard.shp"
+
+
+important_columns = ['street','market_hawker','miscellaneous','total_dwelling_units']
+housing_df = df[important_columns]
+
+
+streetname = housing_df['street']
+markets = housing_df['market_hawker']
+#Examples include admin office, childcare centre, education centre, Residents' Committees centre
+misc = housing_df['miscellaneous']
+population = housing_df['total_dwelling_units']
+
+
+housing_df.replace('Y',1,inplace=True)
+housing_df.replace('N',0,inplace=True)
+
+
+print(housing_df.describe())
+
+print(housing_df.groupby('street').sum().head())
+
+
+shp_path = "./dwelling/PLAN_BDY_DWELLING_TYPE_2014.shp"
 sf = shp.Reader(shp_path)
 
 sns.set(style="whitegrid", palette="pastel", color_codes=True)
-sns.mpl.rc("figure", figsize=(100,60))
+sns.mpl.rc("figure", figsize=(10,6))
 
 
 
@@ -74,7 +81,7 @@ def plot_map(sf, x_lim=None, y_lim=None, figsize=(11, 9)):
         if (x_lim == None) & (y_lim == None):
             x0 = np.mean(x)
             y0 = np.mean(y)
-            plt.text(x0, y0, id, fontsize=10)
+            plt.text(x0, y0, id, fontsize=1)
         id = id + 1
 
     if (x_lim != None) & (y_lim != None):
@@ -82,7 +89,9 @@ def plot_map(sf, x_lim=None, y_lim=None, figsize=(11, 9)):
         plt.ylim(y_lim)
 
 plot_map(sf)
-plt.show()
+
+
+geometry = []
 
 
 
