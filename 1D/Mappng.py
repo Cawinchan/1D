@@ -11,7 +11,7 @@ from multiprocessing import Pool
 # df = pd.read_csv('hdb-property-information.csv')
 # print(df.columns)
 #
-# building_df = pd.read_json('./singapore-postal-codes/buildings.json')
+# building_df = pd.read_json('buildings.json')
 # print(building_df.columns)
 #
 #
