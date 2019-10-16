@@ -255,26 +255,17 @@ def plot_map_fill_multiples_ids_tone(sf, title, comuna,
         if print_id != False:
             x0 = np.mean(x_lon)
             y0 = np.mean(y_lat)
-            plt.text(x0, y0, id, fontsize=10)
+            plt.text(x0, y0, id, fontsize=1)
     if (x_lim != None) & (y_lim != None):
         plt.xlim(x_lim)
         plt.ylim(y_lim)
 
 print_id = True # The shape id will be printed
 color_pallete = 4 # 'Purples'
-plot_comunas_data(sf, 'Singapore Population Density',combined['street'].tolist(), data=combined['total_dwelling_units'].drop_duplicates().tolist(), color=color_pallete, print_id=print_id)
+plot_comunas_data(sf, 'Singapore Population Density',combined['street'].tolist(), data=housing_df['total_dwelling_units'].drop_duplicates().tolist(), color=color_pallete, print_id=print_id)
 plt.show()
 
 
-crs = {'init': 'epsg:4326'}
-
-geometry = [Point(xy) for xy in zip(combined['LONGTITUDE'],combined['LATITUDE'])]
-
-
-geo_df = gpd.GeoDataFrame(combined,crs= crs,geometry=geometry)
-geo_df.head()
-
-geo_df.plot(ax = ax, markersize=20, color='red', marker='o')
 
 plt.show()
 
