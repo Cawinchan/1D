@@ -27,6 +27,19 @@ def scale_transform(coords):
 
     return out, scores
 
+def video_cv(video):
+    """Converts video into a BGR format for display
+
+    This is abstracted out to allow for experimentation
+
+    Args:
+        video: A numpy array with 1 byte per pixel, 3 channels RGB
+
+    Returns:
+        A numpy array with with 1 byte per pixel, 3 channels BGR
+    """
+    return video[:, :, :: -1]  # RGB -> BGR
+#    return video[:,:,:]
 
 def make_vector(poseKeypoints):
     """
@@ -82,6 +95,14 @@ def crop_image(full_image, w, h):
     #out = full_image[:h, w_min:w_max]
     out = full_image
     return out
+
+def transform_image(img,w,h):
+    transformed_image = cv2.flip(
+            crop_image(
+                img,
+                w, h
+            ), 1)
+    return transformed_image
 
 
 def get_webcam(w, h):

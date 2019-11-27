@@ -1,7 +1,10 @@
 from subprocess import call
 import pyaudio
+from os import system
 from time import sleep
 import speech_recognition as sr
+
+
 
 r = sr.Recognizer()
 
@@ -10,21 +13,21 @@ print(index)
 
 counter = 0
 #print("say something2")
-while counter == 0:
+while True:
      with sr.Microphone() as source:                # use the default microphone as the audio source
           r.adjust_for_ambient_noise(source)         # here
           print("Adjusting for background noise. One second")
           r.adjust_for_ambient_noise(source)
           print("Say something!")
-       	  audio = r.listen(source,timeout = 3)
+       	  audio = r.listen(source,timeout = 1)
        	  print('Recognising audio...')
           words = r.recognize_google(audio, language='en-IN', show_all=True)
-       	  print(words)
+          print(words)
           if not words:
-               continue
+              continue
           if 'on' in words['alternative'][0]['transcript'] and counter == 0:
-              counter += 1
-              start_cmd = 'python3 demo.py'
-              call(['python3', 'demo.py'])
-          else:
-               print('no word "on" heard') 
+          #if True:
+              system('gnome-terminal -x python3 ~/PycharmProjects/yogamirror/demo.py')
+          if 'off' in words['alternative'][0]['transcript']:
+              call(['killall', 'demo.py'])
+

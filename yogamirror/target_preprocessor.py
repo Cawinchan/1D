@@ -1,9 +1,10 @@
 
 from util import (get_ordinal_score, make_vector, get_webcam, get_image, label_img)
-import argparse 
-import cv2 
+import argparse
+import cv2
 from openpose import pyopenpose as op
 import numpy as np
+import pickle
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--target_video', type=str, default='./test.mp4')
@@ -33,10 +34,15 @@ opWrapper = op.WrapperPython()
 opWrapper.configure(params)
 opWrapper.start()
 
-myvideo = cv2.VideoWriter("target_skeleton.mp4", cv2.VideoWriter_fourcc(*'DIVX'), 30 , (int(target.get(cv2.CAP_PROP_FRAME_WIDTH)), int(target.get(cv2.CAP_PROP_FRAME_HEIGHT))),
-                          False)
+fourcc = cv2.VideoWriter_fourcc(*'DIVX')
+out = cv2.VideoWriter(
+    'target_skeleton.mp4',
+    fourcc,
+    10,
+    (args.cam_width, args.cam_height)  #args.cam_width, args.cam_height
+)
 
-complete_target_vector_map = np.empty((1,25,3))
+complete_target_vector_map = []
 
 while True:
 
@@ -49,25 +55,27 @@ while True:
              target_datum.poseKeypoints.shape == (1, 25, 3):
           if target_datum.poseKeypoints.shape:
                  target_coords_vec = make_vector(target_datum.poseKeypoints)
-                 complete_target_vector_map = np.concatenate((complete_target_vector_map, target_coords_vec)) 
+                 complete_target_vector_map.append(target_coords_vec) 
 
      screen_out = target_datum.cvOutputData
      cv2.rectangle(screen_out, (10, 30), (600, 120), (255, 255, 255), 3)
      font = cv2.FONT_HERSHEY_DUPLEX
-     myvideo.write(screen_out)
+     out.write(screen_out)
      cv2.imshow("Webcam and Target Image", screen_out)
 
 
 
      key = cv2.waitKey(1)
      if key == ord('q'):
-         np.savetxt('complete_target_vector_map.txt', complete_target_vector_map)
+         print(np.shape(complete_target_vector_map))
+         with open("complete_target_vector_map.txt", 'wb') as fp:
+              pickle.dump(complete_target_vector_map, fp) 
          break
 
 
 # Clean up
 target.release()
-myvideo.release()
+out.release()
 cv2.destroyAllWindows()
 
 
